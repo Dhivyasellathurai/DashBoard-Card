@@ -1,5 +1,6 @@
 package com.example.dashboard_card.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,10 @@ public class EmployeeService {
 		return employeeRepository.findAllByName(userName);
 
 	}
-	public List<OverTimeAnalysis> getByName() {
-		return employeeRepository.findAllByName();
 
+	public Double getByFilter(String fromDate, String toDate) {
+		Double overTimeHours = employeeRepository.findOverTimeHours(fromDate, toDate);
+		return overTimeHours;
 	}
-
 
 }

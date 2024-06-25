@@ -1,5 +1,6 @@
 package com.example.dashboard_card.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class EmployeeController {
 		return employeeService.getByName(userName);
 	}
 
-	@GetMapping("/getDesignation")
-	public List<OverTimeAnalysis> getAllByName() {
-		return employeeService.getByName();
+	@GetMapping("/get/OverTime/analysis")
+	public Double getByFilter(@RequestParam("FromDate") String FromDate, @RequestParam("ToDate") String ToDate) {
+		return employeeService.getByFilter(FromDate, ToDate);
 	}
 }
