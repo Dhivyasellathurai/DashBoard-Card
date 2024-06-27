@@ -3,10 +3,13 @@ package com.example.dashboard_card.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.dashboard_card.entity.BarchartFilter;
+import com.example.dashboard_card.entity.DayAnalyseByCategory;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
 import com.example.dashboard_card.repository.EmployeeRepository;
 
@@ -28,9 +31,14 @@ public class EmployeeService {
 
 	public double findPercentage(String fromDate, String ToDate) {
 		double overtimeHours = employeeRepository.findOverTimeHours(fromDate, ToDate);
-		double estimatedHours = 9;
+		double estimatedHours = employeeRepository.findEstimatedHours(fromDate, ToDate);
 		double percentage = (overtimeHours / estimatedHours) * 100;
 		return percentage;
+	}
+
+	public static Double calculatePercentage(Double totalDays, Double nrmlDay) {
+		double result = (nrmlDay / totalDays) * 100;
+		return result;
 	}
 
 	public Map<String, Double> findDayAnalysis(String fromDate, String toDate, String filterKey) {
@@ -45,8 +53,13 @@ public class EmployeeService {
 		return dayCountMap;
 	}
 
-	public static Double calculatePercentage(Double totalDays, Double nrmlDay) {
-		double result = (nrmlDay / totalDays) * 100;
-		return result;
+	public DayAnalyseByCategory getByCategory(String columnName, String fromdate, String toDate) {
+		List<BarchartFilter> list = employeeRepository.findAllByDateRange(fromdate, toDate);
+		List<String> category = list.stream().
+				filter(log ->log.getProjectName())
+				.collect(Colletors.groupingBy(BarchartFilter.getProjectName(),Collectors.toList())));
+				DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+				analyseByCategory.setCategoryName(category);
+				return analyseByCategory;
 	}
 }

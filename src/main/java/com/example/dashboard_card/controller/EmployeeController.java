@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dashboard_card.entity.DayAnalyseByCategory;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
 import com.example.dashboard_card.repository.EmployeeRepository;
 import com.example.dashboard_card.service.EmployeeService;
@@ -48,5 +49,11 @@ public class EmployeeController {
 	public Map<String, Double> getWorkingDayAnalysis(@RequestParam("FromDate") String FromDate,
 			@RequestParam("ToDate") String ToDate, @RequestParam("filterKey") String filterKey) {
 		return employeeService.findDayAnalysis(FromDate, ToDate, filterKey);
+	}
+
+	@GetMapping("get/dayAnalysis")
+	public List<String> get(@RequestParam("filterKey") String filterKey, @RequestParam("FromDate") String FromDate,
+			@RequestParam("ToDate") String ToDate) {
+		return employeeService.getByCategory(filterKey, FromDate, ToDate);
 	}
 }
