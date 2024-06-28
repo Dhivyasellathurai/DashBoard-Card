@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dashboard_card.entity.DayAnalyseByCategory;
+import com.example.dashboard_card.entity.DayFilter;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
 import com.example.dashboard_card.repository.EmployeeRepository;
 import com.example.dashboard_card.service.EmployeeService;
@@ -51,9 +52,15 @@ public class EmployeeController {
 		return employeeService.findDayAnalysis(FromDate, ToDate, filterKey);
 	}
 
-	@GetMapping("get/dayAnalysis")
-	public List<String> get(@RequestParam("filterKey") String filterKey, @RequestParam("FromDate") String FromDate,
-			@RequestParam("ToDate") String ToDate) {
+	@GetMapping("get/dayRange")
+	public DayAnalyseByCategory getAll(@RequestParam("filterKey") String filterKey,
+			@RequestParam("FromDate") String FromDate, @RequestParam("ToDate") String ToDate) {
 		return employeeService.getByCategory(filterKey, FromDate, ToDate);
+
+	}
+
+	@GetMapping("/getAll")
+	 public DayFilter getDays(String columnName, String fromdate, String toDate) {
+		return employeeService.getDays(columnName, fromdate, toDate);
 	}
 }

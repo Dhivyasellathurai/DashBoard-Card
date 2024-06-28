@@ -1,20 +1,12 @@
 package com.example.dashboard_card.entity;
 
-import java.util.List;
+public interface BarchartFilter {
+	String getCategoryName();
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+	int getWorkingDays();
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class BarchartFilter {
+	int getWeekDays();
 
-	private List<String> projectName;
-	private List<String> jobname;
-	private List<String> userName;
-	private List<String> phaseName;
-	private List<String> day;
+	int getPublicHolidays();
 
 }

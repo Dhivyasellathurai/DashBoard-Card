@@ -1,6 +1,7 @@
 package com.example.dashboard_card.entity;
 
 import java.util.List;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DayAnalyseByCategory {
 
-	List<String> categoryName;
-	List<String> weekOff;
-	List<String> workingDays;
-	List<String> publicHolidays;
+	private Set<String> categoryName;
+	private int weekOff;
+	private int workingDays;
+	private int publicHolidays;
 
 }
