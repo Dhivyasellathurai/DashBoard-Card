@@ -23,20 +23,28 @@ public interface EmployeeRepository extends JpaRepository<OverTimeAnalysis, Inte
 	@Query(value = "select sum(estimated_hours_temp) from overtime_analysis oa where TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY')", nativeQuery = true)
 	Double findEstimatedHours(String fromDate, String toDate);
 
-	@Query(value = "select count(oa.day) from overtime_analysis oa where (oa.project_name=:filterKey or oa.phase_name=:filterKey or oa.job_name=:filterKey or oa.user_name=:filterKey) and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') ", nativeQuery = true)
-	Integer findTotalCountOfDays(String filterKey, String fromDate, String toDate);
+	@Query(value = "select oa.project_name from overtime_analysis oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') group by oa.project_name", nativeQuery = true)
+	List<String> findProjectsByDateRange(String fromDate, String toDate);
 
-	@Query(value = "select count(oa.day) from overtime_analysis oa where (oa.project_name=:filterKey or oa.phase_name=:filterKey or oa.job_name=:filterKey or oa.user_name=:filterKey) and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') and oa.day='Weekoff' ", nativeQuery = true)
-	Integer findWeekDays(String filterKey, String fromDate, String toDate);
+	@Query(value = "select oa.phase_name from overtime_analysis oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') group by oa.phase_name", nativeQuery = true)
+	List<String> findPhaseByDateRange(String fromDate, String toDate);
 
-	@Query(value = "select count(oa.day) from overtime_analysis oa where (oa.project_name=:filterKey or oa.phase_name=:filterKey or oa.job_name=:filterKey or oa.user_name=:filterKey) and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') and oa.day='Working Day' ", nativeQuery = true)
-	Integer findWorkingDays(String filterKey, String fromDate, String toDate);
+	@Query(value = "select oa.user_name from overtime_analysis oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') group by oa.user_name", nativeQuery = true)
+	List<String> findEmployeeByDateRange(String fromDate, String toDate);
 
-	@Query(value = "select count(oa.day) from overtime_analysis oa where (oa.project_name=:filterKey or oa.phase_name=:filterKey or oa.job_name=:filterKey or oa.user_name=:filterKey) and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') and oa.day='Public Holiday' ", nativeQuery = true)
-	Integer findHoliDays(String filterKey, String fromDate, String toDate);
+	@Query(value = "select oa.job_name from overtime_analysis oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') group by oa.job_name", nativeQuery = true)
+	List<String> findJobsByDateRange(String fromDate, String toDate);
 
-	@Query(value = "select * from overtime_analysis oa where TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY')", nativeQuery = true)
-	List<OverTimeAnalysis> findAllByDateRange(String fromDate, String toDate);
-	
-	
+	@Query(value = " select sum(oa.overtime_hours) from overtime_analysis oa where (oa.project_name=:value or oa.job_name=:value or oa.phase_name=:value or oa.user_name=:value) and oa.day='Weekoff' and oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') ", nativeQuery = true)
+	Double findOverTimeHoursByWeekOff(String value, String fromDate, String toDate);
+
+	@Query(value = " select sum(oa.overtime_hours) from overtime_analysis oa where oa.overtime_hours > 0 and (oa.project_name=:value or oa.job_name=:value or oa.phase_name=:value or oa.user_name=:value) and oa.day='Working Day' and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') ", nativeQuery = true)
+	Double findOverTimeHoursByWorkingDay(String value, String fromDate, String toDate);
+
+	@Query(value = " select sum(oa.overtime_hours) from overtime_analysis oa where oa.overtime_hours > 0 and (oa.project_name=:value or oa.job_name=:value or oa.phase_name=:value or oa.user_name=:value) and oa.day='Public Holiday' and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') ", nativeQuery = true)
+	Double findOverTimeHoursByHolidays(String value, String fromDate, String toDate);
+
+	@Query(value = "select sum(oa.overtime_hours) from overtime_analysis oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') and (oa.project_name=:value or oa.job_name=:value or oa.phase_name=:value or oa.user_name=:value)", nativeQuery = true)
+	Double findCountOfDays(String value, String fromDate, String toDate);
+
 }

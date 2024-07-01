@@ -1,19 +1,12 @@
 package com.example.dashboard_card.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.dashboard_card.entity.BarchartFilter;
 import com.example.dashboard_card.entity.DayAnalyseByCategory;
-import com.example.dashboard_card.entity.DayFilter;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
 import com.example.dashboard_card.repository.EmployeeRepository;
 
@@ -40,84 +33,101 @@ public class EmployeeService {
 		return percentage;
 	}
 
-	public static Double calculatePercentage(Double totalDays, Double nrmlDay) {
-		double result = (nrmlDay / totalDays) * 100;
+	public static Double calculatePercentage(Double hours, Double totalHours) {
+		if (hours == null || hours == 0) {
+			return 0.00;
+		}
+		Double result = (hours / totalHours) * 100;
 		return result;
 	}
 
-	public Map<String, Double> findDayAnalysis(String fromDate, String toDate, String filterKey) {
-		Map<String, Double> dayCountMap = new HashMap<>();
-		double totalDays = (double) employeeRepository.findTotalCountOfDays(filterKey, fromDate, toDate);
-		double weekDays = (double) employeeRepository.findWeekDays(filterKey, fromDate, toDate);
-		double workingDays = (double) employeeRepository.findWorkingDays(filterKey, fromDate, toDate);
-		double publicHolidays = (double) employeeRepository.findHoliDays(filterKey, fromDate, toDate);
-		dayCountMap.put("Working Days", calculatePercentage(totalDays, workingDays));
-		dayCountMap.put("Week Off Days", calculatePercentage(totalDays, weekDays));
-		dayCountMap.put("Public HoliDays", calculatePercentage(totalDays, publicHolidays));
-		return dayCountMap;
+	public DayAnalyseByCategory getPercentageOfProjects(String fromdate, String toDate) {
+		List<String> category = employeeRepository.findProjectsByDateRange(fromdate, toDate);
+		List<Double> weeklist = new ArrayList<Double>();
+		List<Double> workinglist = new ArrayList<Double>();
+		List<Double> holidaylist = new ArrayList<Double>();
+		for (int i = 0; i < category.size(); i++) {
+			Double totalHours = employeeRepository.findCountOfDays(category.get(i), fromdate, toDate);
+			Double value = employeeRepository.findOverTimeHoursByWeekOff(category.get(i), fromdate, toDate);
+			weeklist.add(calculatePercentage(value, totalHours));
+			Double value1 = employeeRepository.findOverTimeHoursByWorkingDay(category.get(i), fromdate, toDate);
+			workinglist.add(calculatePercentage(value1, totalHours));
+			Double value2 = employeeRepository.findOverTimeHoursByHolidays(category.get(i), fromdate, toDate);
+			holidaylist.add(calculatePercentage(value2, totalHours));
+		}
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+		analyseByCategory.setCategoryName(category);
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setWorkingDays(workinglist);
+		analyseByCategory.setPublicHolidays(holidaylist);
+		return analyseByCategory;
+
 	}
 
-	public DayAnalyseByCategory getByCategory(String columnName, String fromdate, String toDate) {
-		List<OverTimeAnalysis> list = employeeRepository.findAllByDateRange(fromdate, toDate);
-		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
-		Set<String> category = new HashSet<>();
-
-		List<Double> workingDays = new ArrayList<Double>();
-		List<Double> weekends = new ArrayList<Double>();
-		List<Double> holidays = new ArrayList<Double>();
-
-		for (OverTimeAnalysis ota : list) {
-			switch (columnName) {
-			case "projectName":
-				category.add(ota.getProjectName());
-				break;
-			case "jobName":
-				category.add(ota.getJobName());
-				break;
-			case "phaseName":
-				category.add(ota.getPhaseName());
-				break;
-			case "userName":
-				category.add(ota.getUserName());
-				break;
-			default:
-				throw new IllegalArgumentException("Invalid column name: " + columnName);
-			}
-
-			switch (ota.getDay()) {
-			case "Working Day":
-				workingDays.add(1.00);
-				break;
-			case "Weekoff":
-				weekends.add(1.00);
-				break;
-			case "Public Holiday":
-				holidays.add(1.00);
-				break;
-			}
-
+	public DayAnalyseByCategory getPercentageOfPhase(String fromdate, String toDate) {
+		List<String> category = employeeRepository.findPhaseByDateRange(fromdate, toDate);
+		List<Double> weeklist = new ArrayList<Double>();
+		List<Double> workinglist = new ArrayList<Double>();
+		List<Double> holidaylist = new ArrayList<Double>();
+		for (int i = 0; i < category.size(); i++) {
+			Double totalHours = employeeRepository.findCountOfDays(category.get(i), fromdate, toDate);
+			Double value = employeeRepository.findOverTimeHoursByWeekOff(category.get(i), fromdate, toDate);
+			weeklist.add(calculatePercentage(value, totalHours));
+			Double value1 = employeeRepository.findOverTimeHoursByWorkingDay(category.get(i), fromdate, toDate);
+			workinglist.add(calculatePercentage(value1, totalHours));
+			Double value2 = employeeRepository.findOverTimeHoursByHolidays(category.get(i), fromdate, toDate);
+			holidaylist.add(calculatePercentage(value2, totalHours));
 		}
-
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
 		analyseByCategory.setCategoryName(category);
-		analyseByCategory.setWorkingDays(workingDays.size());
-		analyseByCategory.setWeekOff(weekends.size());
-		analyseByCategory.setPublicHolidays(holidays.size());
-
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setWorkingDays(workinglist);
+		analyseByCategory.setPublicHolidays(holidaylist);
 		return analyseByCategory;
 	}
 
-	public DayFilter getDays(String columnName, String fromdate, String toDate) {
-		List<OverTimeAnalysis> list = employeeRepository.findAllByDateRange(fromdate, toDate);
-		List<OverTimeAnalysis> value1 = list.stream().filter(day -> day.getDay().equals("Working Day"))
-				.collect(Collectors.toList());
-		List<OverTimeAnalysis> value2 = list.stream().filter(day -> day.getDay().equals("Weekoff"))
-				.collect(Collectors.toList());
-		List<OverTimeAnalysis> value3 = list.stream().filter(day -> day.getDay().equals("Public Holiday"))
-				.collect(Collectors.toList());
-		DayFilter dayFilter = new DayFilter();
-		dayFilter.setWeekDays(value2.size());
-		dayFilter.setWorkingDays(value1.size());
-		dayFilter.setPublicHolidays(value3.size());
-		return dayFilter;
+	public DayAnalyseByCategory getDayPercentageForJobs(String fromdate, String toDate) {
+		List<String> category = employeeRepository.findJobsByDateRange(fromdate, toDate);
+		List<Double> weeklist = new ArrayList<Double>();
+		List<Double> workinglist = new ArrayList<Double>();
+		List<Double> holidaylist = new ArrayList<Double>();
+		for (int i = 0; i < category.size(); i++) {
+			Double totalHours = employeeRepository.findCountOfDays(category.get(i), fromdate, toDate);
+			Double value = employeeRepository.findOverTimeHoursByWeekOff(category.get(i), fromdate, toDate);
+			weeklist.add(calculatePercentage(value, totalHours));
+			Double value1 = employeeRepository.findOverTimeHoursByWorkingDay(category.get(i), fromdate, toDate);
+			workinglist.add(calculatePercentage(value1, totalHours));
+			Double value2 = employeeRepository.findOverTimeHoursByHolidays(category.get(i), fromdate, toDate);
+			holidaylist.add(calculatePercentage(value2, totalHours));
+		}
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+		analyseByCategory.setCategoryName(category);
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setWorkingDays(workinglist);
+		analyseByCategory.setPublicHolidays(holidaylist);
+		return analyseByCategory;
 	}
+
+	public DayAnalyseByCategory getDayPercentageForEmployee(String fromdate, String toDate) {
+		List<String> category = employeeRepository.findEmployeeByDateRange(fromdate, toDate);
+		List<Double> weeklist = new ArrayList<Double>();
+		List<Double> workinglist = new ArrayList<Double>();
+		List<Double> holidaylist = new ArrayList<Double>();
+		for (int i = 0; i < category.size(); i++) {
+			Double totalHours = employeeRepository.findCountOfDays(category.get(i), fromdate, toDate);
+			Double value = employeeRepository.findOverTimeHoursByWeekOff(category.get(i), fromdate, toDate);
+			weeklist.add(calculatePercentage(value, totalHours));
+			Double value1 = employeeRepository.findOverTimeHoursByWorkingDay(category.get(i), fromdate, toDate);
+			workinglist.add(calculatePercentage(value1, totalHours));
+			Double value2 = employeeRepository.findOverTimeHoursByHolidays(category.get(i), fromdate, toDate);
+			holidaylist.add(calculatePercentage(value2, totalHours));
+		}
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+		analyseByCategory.setCategoryName(category);
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setWorkingDays(workinglist);
+		analyseByCategory.setPublicHolidays(holidaylist);
+		return analyseByCategory;
+	}
+
 }

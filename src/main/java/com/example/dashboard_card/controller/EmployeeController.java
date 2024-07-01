@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dashboard_card.entity.DayAnalyseByCategory;
-import com.example.dashboard_card.entity.DayFilter;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
 import com.example.dashboard_card.repository.EmployeeRepository;
 import com.example.dashboard_card.service.EmployeeService;
@@ -46,21 +45,23 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping("get/workingDay/analysis")
-	public Map<String, Double> getWorkingDayAnalysis(@RequestParam("FromDate") String FromDate,
-			@RequestParam("ToDate") String ToDate, @RequestParam("filterKey") String filterKey) {
-		return employeeService.findDayAnalysis(FromDate, ToDate, filterKey);
+	@GetMapping("/get/project/percentages")
+	public DayAnalyseByCategory getDayPercentageForProject(String fromdate, String toDate) {
+		return employeeService.getPercentageOfProjects(fromdate, toDate);
 	}
 
-	@GetMapping("get/dayRange")
-	public DayAnalyseByCategory getAll(@RequestParam("filterKey") String filterKey,
-			@RequestParam("FromDate") String FromDate, @RequestParam("ToDate") String ToDate) {
-		return employeeService.getByCategory(filterKey, FromDate, ToDate);
-
+	@GetMapping("/get/phase/percentages")
+	public DayAnalyseByCategory getDayPercentageForPhase(String fromdate, String toDate) {
+		return employeeService.getPercentageOfPhase(fromdate, toDate);
 	}
 
-	@GetMapping("/getAll")
-	 public DayFilter getDays(String columnName, String fromdate, String toDate) {
-		return employeeService.getDays(columnName, fromdate, toDate);
+	@GetMapping("/get/jobs/percentages")
+	public DayAnalyseByCategory getDayPercentageForJobs(String fromdate, String toDate) {
+		return employeeService.getDayPercentageForJobs(fromdate, toDate);
+	}
+
+	@GetMapping("/get/employee/percentages")
+	public DayAnalyseByCategory getDayPercentageForEmployee(String fromdate, String toDate) {
+		return employeeService.getDayPercentageForEmployee(fromdate, toDate);
 	}
 }
