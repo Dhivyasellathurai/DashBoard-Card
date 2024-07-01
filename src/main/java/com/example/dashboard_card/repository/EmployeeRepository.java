@@ -47,4 +47,7 @@ public interface EmployeeRepository extends JpaRepository<OverTimeAnalysis, Inte
 	@Query(value = "select sum(oa.overtime_hours) from overtime_analysis oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY') and (oa.project_name=:value or oa.job_name=:value or oa.phase_name=:value or oa.user_name=:value)", nativeQuery = true)
 	Double findCountOfDays(String value, String fromDate, String toDate);
 
+	@Query(value = "select * from public.overtime_analysis as oa where oa.overtime_hours > 0 and TO_DATE(oa.attendance_date, 'dd/mm/YYYY') BETWEEN TO_DATE(:fromDate, 'dd/mm/YYYY') AND TO_DATE(:toDate, 'dd/mm/YYYY')", nativeQuery = true)
+	List<OverTimeAnalysis> findAllByDate(String fromDate, String toDate);
+
 }

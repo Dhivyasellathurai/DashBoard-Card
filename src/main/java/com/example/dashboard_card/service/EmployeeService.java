@@ -1,7 +1,9 @@
 package com.example.dashboard_card.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -130,4 +132,21 @@ public class EmployeeService {
 		return analyseByCategory;
 	}
 
+	public Map<String, Object> getDayForEmployee(String fromdate, String toDate) {
+		List<OverTimeAnalysis> category = employeeRepository.findAllByDate(fromdate, toDate);
+
+		Map<String, Object> map = new HashMap<String, Object>();
+			long weekDays = category.stream().filter(x -> x.getDay().equals("Weekoff"))
+					.count();
+			map.put("weekDay", weekDays);
+			long workingDays = category.stream().filter(x -> x.getDay().equals("Working Day"))
+					.count();
+			map.put("WorkingDay", workingDays);
+			long Holiday = category.stream().filter(x -> x.getDay().equals("Public Holiday"))
+					.count();
+			map.put("Holiday", Holiday);
+		
+
+		return map;
+	}
 }

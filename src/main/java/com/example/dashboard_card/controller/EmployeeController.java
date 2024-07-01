@@ -64,4 +64,9 @@ public class EmployeeController {
 	public DayAnalyseByCategory getDayPercentageForEmployee(String fromdate, String toDate) {
 		return employeeService.getDayPercentageForEmployee(fromdate, toDate);
 	}
+
+	@GetMapping("/get/all")
+	private Map<String, Object> getDayForEmployee(String fromdate, String toDate) {
+		return employeeService.getDayForEmployee(fromdate, toDate);
+	}
 }
