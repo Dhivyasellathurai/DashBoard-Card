@@ -56,4 +56,5 @@ public class OverTimeAnalysis {
 	private String fhshs;
 	private String day;
 	private String overtimePercent;
+	private Double estimatedHoursTemp;
 }
