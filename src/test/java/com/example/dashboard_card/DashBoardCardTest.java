@@ -128,4 +128,88 @@ public class DashBoardCardTest {
 		DayAnalyseByCategory category = service.getPercentageOfProjects("25/04/2024", "26/04/2024");
 		assertEquals(analyseByCategory, category);
 	}
+	@Test
+	void getPercentageOfPhaseTest() {
+		
+		List<String> list = new ArrayList<String>();
+		list.add("Food Delivery");
+		when(repository.findPhaseByDateRange("25/04/2024", "26/04/2024")).thenReturn(list);
+		when(repository.findCountOfDays("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(20.00);
+		when(repository.findOverTimeHoursByWeekOff("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(5.00);
+		when(repository.findOverTimeHoursByWorkingDay("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(10.00);
+		when(repository.findOverTimeHoursByHolidays("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(5.00);
+		Double weekDay = (5.00 / 20.00) * 100;
+		Double workingDay = (10.00 / 20.00) * 100;
+		Double holiday = (5.00 / 20.00) * 100;
+		List<Double> weeklist = new ArrayList<Double>();
+		weeklist.add(weekDay);
+		List<Double> workinglist = new ArrayList<Double>();
+		workinglist.add(workingDay);
+		List<Double> holidaylist = new ArrayList<Double>();
+		holidaylist.add(holiday);
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+		analyseByCategory.setCategoryName(list);
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setPublicHolidays(holidaylist);
+		analyseByCategory.setWorkingDays(workinglist);
+		
+		DayAnalyseByCategory category = service.getPercentageOfPhase("25/04/2024", "26/04/2024");
+		assertEquals(analyseByCategory, category);
+	}
+	@Test
+	void getPercentageOfJobsTest() {
+		
+		List<String> list = new ArrayList<String>();
+		list.add("Food Delivery");
+		when(repository.findJobsByDateRange("25/04/2024", "26/04/2024")).thenReturn(list);
+		when(repository.findCountOfDays("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(20.00);
+		when(repository.findOverTimeHoursByWeekOff("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(5.00);
+		when(repository.findOverTimeHoursByWorkingDay("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(10.00);
+		when(repository.findOverTimeHoursByHolidays("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(5.00);
+		Double weekDay = (5.00 / 20.00) * 100;
+		Double workingDay = (10.00 / 20.00) * 100;
+		Double holiday = (5.00 / 20.00) * 100;
+		List<Double> weeklist = new ArrayList<Double>();
+		weeklist.add(weekDay);
+		List<Double> workinglist = new ArrayList<Double>();
+		workinglist.add(workingDay);
+		List<Double> holidaylist = new ArrayList<Double>();
+		holidaylist.add(holiday);
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+		analyseByCategory.setCategoryName(list);
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setPublicHolidays(holidaylist);
+		analyseByCategory.setWorkingDays(workinglist);
+		
+		DayAnalyseByCategory category = service.getDayPercentageForJobs("25/04/2024", "26/04/2024");
+		assertEquals(analyseByCategory, category);
+	}
+	@Test
+	void getPercentageOfEmployeesTest() {
+		
+		List<String> list = new ArrayList<String>();
+		list.add("Food Delivery");
+		when(repository.findEmployeeByDateRange("25/04/2024", "26/04/2024")).thenReturn(list);
+		when(repository.findCountOfDays("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(20.00);
+		when(repository.findOverTimeHoursByWeekOff("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(5.00);
+		when(repository.findOverTimeHoursByWorkingDay("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(10.00);
+		when(repository.findOverTimeHoursByHolidays("Food Delivery", "25/04/2024", "26/04/2024")).thenReturn(5.00);
+		Double weekDay = (5.00 / 20.00) * 100;
+		Double workingDay = (10.00 / 20.00) * 100;
+		Double holiday = (5.00 / 20.00) * 100;
+		List<Double> weeklist = new ArrayList<Double>();
+		weeklist.add(weekDay);
+		List<Double> workinglist = new ArrayList<Double>();
+		workinglist.add(workingDay);
+		List<Double> holidaylist = new ArrayList<Double>();
+		holidaylist.add(holiday);
+		DayAnalyseByCategory analyseByCategory = new DayAnalyseByCategory();
+		analyseByCategory.setCategoryName(list);
+		analyseByCategory.setWeekOff(weeklist);
+		analyseByCategory.setPublicHolidays(holidaylist);
+		analyseByCategory.setWorkingDays(workinglist);
+		
+		DayAnalyseByCategory category = service.getDayPercentageForEmployee("25/04/2024", "26/04/2024");
+		assertEquals(analyseByCategory, category);
+	}
 }
