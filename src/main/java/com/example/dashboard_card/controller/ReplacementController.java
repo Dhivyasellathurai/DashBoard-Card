@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dashboard_card.entity.ReplacementTimeSheets;
+import com.example.dashboard_card.entity.WeeklyHours;
 import com.example.dashboard_card.service.ReplacementService;
 
 @RestController
@@ -24,7 +25,16 @@ public class ReplacementController {
 			@RequestParam("toDate") LocalDate toDate) {
 		return service.getByDate(fromDate, toDate);
 	}
-	
-	
+
+	@GetMapping("get/weeklyHours")
+	public WeeklyHours getWeeklyHours() {
+		return service.getReplaceHourDetails();
+	}
+
+	@GetMapping("get/Days")
+	public List<String> getDays(@RequestParam("fromDate") LocalDate fromDate,
+			@RequestParam("toDate") LocalDate toDate) {
+		return service.getDayList(fromDate, toDate);
+	}
 
 }

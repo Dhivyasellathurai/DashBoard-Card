@@ -15,4 +15,7 @@ public interface ReplacementRepository extends JpaRepository<ReplacementTimeShee
 	@Query(value = "select * from vw_replacement_timesheet rt where rt.attendance_date between :fromDate and :toDate", nativeQuery = true)
 	List<ReplacementTimeSheets> findByDate(LocalDate fromDate, LocalDate toDate);
 
+	@Query(value = "select sum(rt.job_decimal_hours) from vw_replacement_timesheet rt where rt.attendance_date between :fromDate and :toDate", nativeQuery = true)
+	Float findCountHours(LocalDate fromDate, LocalDate toDate);
+
 }
