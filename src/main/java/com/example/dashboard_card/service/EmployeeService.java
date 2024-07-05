@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.dashboard_card.entity.DayAnalyseByCategory;
+import com.example.dashboard_card.entity.FilterEntry;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
+import com.example.dashboard_card.entity.OverTimeResponseDto;
 import com.example.dashboard_card.repository.EmployeeRepository;
 
 @Service
@@ -136,16 +138,42 @@ public class EmployeeService {
 		List<OverTimeAnalysis> category = employeeRepository.findAllByDate(fromdate, toDate);
 
 		Map<String, Object> map = new HashMap<String, Object>();
-			long weekDays = category.stream().filter(x -> x.getDay().equals("Weekoff"))
-					.count();
-			map.put("weekDay", weekDays);
-			long workingDays = category.stream().filter(x -> x.getDay().equals("Working Day"))
-					.count();
-			map.put("WorkingDay", workingDays);
-			long Holiday = category.stream().filter(x -> x.getDay().equals("Public Holiday"))
-					.count();
-			map.put("Holiday", Holiday);
-		
+		long weekDays = category.stream().filter(x -> x.getDay().equals("Weekoff")).count();
+		map.put("weekDay", weekDays);
+		long workingDays = category.stream().filter(x -> x.getDay().equals("Working Day")).count();
+		map.put("WorkingDay", workingDays);
+		long Holiday = category.stream().filter(x -> x.getDay().equals("Public Holiday")).count();
+		map.put("Holiday", Holiday);
+
+		return map;
+	}
+
+	public Map<String, Object> getByFilter(OverTimeResponseDto responseDto) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		String fromdate = responseDto.getFromdate();
+		String toDate = responseDto.getToDate();
+		String organization = responseDto.getOrganization();
+		String branch = responseDto.getBranch();
+		String department = responseDto.getDepartment();
+		String category = responseDto.getCategory();
+		String designation = responseDto.getDesignation();
+		String grade = responseDto.getGrade();
+		String section = responseDto.getSection();
+		String project = responseDto.getProject();
+		String phase = responseDto.getPhase();
+		String job = responseDto.getJob();
+		String employee = responseDto.getEmployee();
+		FilterEntry analysis = employeeRepository.findByFilter(fromdate, toDate, organization, branch, department,
+				category, designation, grade, section, project, phase, job, employee);
+		float totalOverTimeHours = analysis.getTotalOvertimeHours();
+		float employeeCount = analysis.getEmployeeCount();
+		float totalCost = totalOverTimeHours * 15;
+		float estimatedHours = analysis.getEstimatedHours();
+		float percentage = (totalOverTimeHours / estimatedHours) * 100;
+		map.put("TotalOverTimeHours", totalOverTimeHours);
+		map.put("EmployeeCount", employeeCount);
+		map.put("TotalCost", totalCost);
+		map.put("TotalPercentage", percentage);
 
 		return map;
 	}

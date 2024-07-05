@@ -6,12 +6,14 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.dashboard_card.entity.DayAnalyseByCategory;
 import com.example.dashboard_card.entity.OverTimeAnalysis;
+import com.example.dashboard_card.entity.OverTimeResponseDto;
 import com.example.dashboard_card.repository.EmployeeRepository;
 import com.example.dashboard_card.service.EmployeeService;
 
@@ -31,7 +33,7 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/get/OverTime/analysis")
-	public Map<String, Object> getByFilter(@RequestParam("FromDate") String FromDate,
+	public Map<String, Object> getByDate(@RequestParam("FromDate") String FromDate,
 			@RequestParam("ToDate") String ToDate) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Double OverTimeHours = employeeRepository.findOverTimeHours(FromDate, ToDate);
@@ -42,7 +44,11 @@ public class EmployeeController {
 		map.put("TotalCost", cost);
 		map.put("OverTime percentage", employeeService.findPercentage(FromDate, ToDate));
 		return map;
+	}
 
+	@GetMapping("/get/filter")
+	public Map<String, Object> getByFilter(@RequestBody OverTimeResponseDto responseDto) {
+		return employeeService.getByFilter(responseDto);
 	}
 
 	@GetMapping("/get/project/percentages")
